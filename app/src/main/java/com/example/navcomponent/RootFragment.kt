@@ -41,10 +41,12 @@ class RootFragment : Fragment(R.layout.fragment_root){
 
     }
 
+
+
     private fun openBox(color: Int, colorName: String) {
 
         //launch box fragment with arguments  and additional options
-
+        val direction = RootFragmentDirections.actionRootFragmentToBoxFragment()
         findNavController().navigate(
             R.id.action_rootFragment_to_boxFragment,
             bundleOf(BoxFragment.ARG_COLOR to color, BoxFragment.ARG_COLOR_NAME to colorName),
