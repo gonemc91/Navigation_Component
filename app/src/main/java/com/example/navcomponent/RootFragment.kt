@@ -31,25 +31,36 @@ class RootFragment : Fragment(R.layout.fragment_root){
         binding.openGreenButton.setOnClickListener {
             openBox(Color.rgb(200, 255, 200), "Green")
         }
-            //listening for the result from BoxFragment
-        parentFragmentManager.setFragmentResultListener(
-            BoxFragment.REQUEST_CODE, viewLifecycleOwner
-        ) { _, data ->
-            val number = data.getInt(BoxFragment.EXTRA_RANDOM_NUMBER)
-            Toast.makeText(requireContext(), "Generate number: $number", Toast.LENGTH_SHORT).show()
-        }
 
+        val liveData =
+            findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Int>(
+                BoxFragment.EXTRA_RANDOM_NUMBER
+            )
+        //listening for the result from BoxFragment
+
+        liveData?.observe(viewLifecycleOwner) { randomNumber ->
+            if(randomNumber != null) {
+                Toast.makeText(
+                    requireContext(),
+                    "Generate number: $randomNumber",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                liveData.value = null
+            }
+        }
     }
+
+
 
 
 
     private fun openBox(color: Int, colorName: String) {
 
         //launch box fragment with arguments  and additional options
-        val direction = RootFragmentDirections.actionRootFragmentToBoxFragment()
+        val direction = RootFragmentDirections.actionRootFragmentToBoxFragment(color, colorName)
         findNavController().navigate(
-            R.id.action_rootFragment_to_boxFragment,
-            bundleOf(BoxFragment.ARG_COLOR to color, BoxFragment.ARG_COLOR_NAME to colorName),
+            direction,
             navOptions {
                 anim {
                     enter = R.anim.enter
